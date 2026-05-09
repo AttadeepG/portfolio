@@ -1321,8 +1321,8 @@ function TweaksPanel({ tweaks, update, open, setOpen, enabled }) {
    ============================================================ */
 const EDIT_PASSWORD = 'portfolio2026'; // ← Change this
 const GH_TOKEN  = '';                  // ← GitHub Personal Access Token (Contents: Write)
-const GH_REPO   = '';                  // ← e.g. 'yourname/portfolio'
-const GH_FILE   = 'portfolio.html';    // ← filename in repo
+const GH_REPO   = 'AttadeepG/portfolio'; // ← pre-filled
+const GH_FILE   = 'index.html';        // ← filename in repo
 const GH_BRANCH = 'main';             // ← branch name
 
 /* --- Reusable editor UI primitives --- */
@@ -1632,6 +1632,109 @@ function EditorPanel() {
 }
 
 /* ============================================================
+   QUICK DEPLOY BUTTON
+   ============================================================ */
+function QuickDeploy() {
+  const TOKEN_KEY = 'portfolio_gh_token';
+  const [state, setState] = useState('idle'); // idle | asking | deploying | ok | err
+  const [msg, setMsg]     = useState('');
+  const [draft, setDraft] = useState('');
+
+  const storedToken = () => {
+    try { return localStorage.getItem(TOKEN_KEY) || ''; } catch { return ''; }
+  };
+
+  async function deploy(token) {
+    setState('deploying');
+    try {
+      const api  = `https://api.github.com/repos/${GH_REPO}/contents/${GH_FILE}`;
+      const hdrs = { Authorization: `token ${token}`, 'Content-Type': 'application/json' };
+      const getR = await fetch(`${api}?ref=${GH_BRANCH}`, { headers: hdrs });
+      if (!getR.ok && getR.status !== 404) throw new Error('Cannot read file — check token scope');
+      const sha  = getR.ok ? (await getR.json()).sha : undefined;
+      const html = '<!doctype html>\n' + document.documentElement.outerHTML;
+      const body = { message: 'Update portfolio', content: btoa(unescape(encodeURIComponent(html))), branch: GH_BRANCH };
+      if (sha) body.sha = sha;
+      const putR = await fetch(api, { method: 'PUT', headers: hdrs, body: JSON.stringify(body) });
+      if (!putR.ok) throw new Error((await putR.json()).message || 'GitHub API error');
+      setState('ok');
+      setMsg('Live in ~30s');
+      setTimeout(() => setState('idle'), 5000);
+    } catch (e) {
+      setState('err');
+      setMsg(e.message);
+      setTimeout(() => setState('idle'), 6000);
+    }
+  }
+
+  function handleClick() {
+    const token = storedToken();
+    if (!token) { setDraft(''); setState('asking'); return; }
+    deploy(token);
+  }
+
+  function handleSaveToken() {
+    const t = draft.trim();
+    if (!t) return;
+    try { localStorage.setItem(TOKEN_KEY, t); } catch {}
+    setState('idle');
+    deploy(t);
+  }
+
+  const base = {
+    position: 'fixed', bottom: 24, left: 24, zIndex: 9998,
+    display: 'flex', alignItems: 'center', gap: 8,
+    padding: '10px 18px', borderRadius: 4, border: '1px solid',
+    fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '.1em',
+    textTransform: 'uppercase', cursor: 'pointer', transition: 'opacity .2s',
+  };
+
+  const colors = {
+    idle:      { background: '#0d0d0f', borderColor: '#2a2926', color: '#a39f96' },
+    asking:    { background: '#0d0d0f', borderColor: '#2a2926', color: '#a39f96' },
+    deploying: { background: '#1a1608', borderColor: '#4a3f10', color: '#d4a017' },
+    ok:        { background: '#091a0e', borderColor: '#174d22', color: '#4ade80' },
+    err:       { background: '#1a0808', borderColor: '#5c1a1a', color: '#f87171' },
+  };
+
+  const labels = {
+    idle:      '⬆ Deploy',
+    deploying: '⟳ Pushing…',
+    ok:        `✓ ${msg}`,
+    err:       `✕ ${msg}`,
+  };
+
+  if (state === 'asking') return (
+    <div style={{ position:'fixed', bottom:24, left:24, zIndex:9998, background:'#0d0d0f', border:'1px solid #2a2926', padding:20, width:320, fontFamily:'var(--font-mono)', fontSize:11 }}>
+      <div style={{ color:'#5a5855', letterSpacing:'.14em', textTransform:'uppercase', marginBottom:12 }}>GitHub Token (one-time)</div>
+      <input
+        autoFocus
+        type="password"
+        placeholder="github_pat_…"
+        value={draft}
+        onChange={e => setDraft(e.target.value)}
+        onKeyDown={e => { if (e.key === 'Enter') handleSaveToken(); if (e.key === 'Escape') setState('idle'); }}
+        style={{ width:'100%', background:'#141414', border:'1px solid #252420', color:'#edeae3', padding:'8px 10px', fontFamily:'inherit', fontSize:11, outline:'none', marginBottom:8, boxSizing:'border-box' }}
+      />
+      <div style={{ color:'#3e3c3a', fontSize:9, marginBottom:12, lineHeight:1.6 }}>
+        github.com → Settings → Developer settings → Fine-grained tokens<br/>
+        Repo: <span style={{color:'#a39f96'}}>AttadeepG/portfolio</span> · Permission: <span style={{color:'#a39f96'}}>Contents: Write</span>
+      </div>
+      <div style={{ display:'flex', gap:8 }}>
+        <button onClick={handleSaveToken} style={{ flex:1, ...base, position:'static', padding:'8px 0', justifyContent:'center', background:'var(--accent)', borderColor:'var(--accent)', color:'var(--accent-ink)' }}>Save &amp; Deploy</button>
+        <button onClick={() => setState('idle')} style={{ flex:1, ...base, position:'static', padding:'8px 0', justifyContent:'center', ...colors.idle }}>Cancel</button>
+      </div>
+    </div>
+  );
+
+  return (
+    <button onClick={handleClick} style={{ ...base, ...colors[state] }}>
+      {labels[state] || labels.idle}
+    </button>
+  );
+}
+
+/* ============================================================
    APP
    ============================================================ */
 function App() {
@@ -1659,6 +1762,7 @@ function App() {
       <Footer />
       <TweaksPanel tweaks={tweaks} update={update} open={open} setOpen={setOpen} enabled={enabled} />
       <EditorPanel />
+      <QuickDeploy />
       {konami && <div className="konami">HELLO THERE ✦</div>}
     </>);
 
