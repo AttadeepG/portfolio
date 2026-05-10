@@ -886,7 +886,7 @@ function Hero() {
           <br />Available <span data-editable="profile-available" suppressContentEditableWarning>{PROFILE.available}</span>
         </div>
 
-        <h1 className="lead" style={{ height: "644px" }}>
+        <h1 className="lead">
           {lines.map((line, i) =>
           <div key={i} style={{ overflow: 'hidden', padding: "0px" }}>
               <span style={{ display: 'inline-block', transform: 'translateY(110%)', animation: `heroIn .9s cubic-bezier(.2,.9,.3,1) ${i * 0.12 + 0.4}s forwards`, padding: "0px 0px 25.2109px" }}>{line}</span>
@@ -895,7 +895,7 @@ function Hero() {
           <style>{`@keyframes heroIn { to { transform: translateY(0); } }`}</style>
         </h1>
 
-        <div className="meta" style={{ height: "257px", padding: "69.6172px 0px 61.4648px" }}>
+        <div className="meta">
           <p><span className="mono label">Intro / 001</span>A freelance marketing designer building launches, rebrands, and growth campaigns for teams who believe craft and performance aren't opposites.</p>
           <p><span className="mono label">Focus / 002</span>Brand systems, campaign art direction, performance creative, and the odd Webflow build when it makes sense.</p>
           <p><span className="mono label">Now / 003</span>Taking on two projects for {PROFILE.available} — rebrands and launch campaigns preferred. Say hello.</p>
@@ -928,7 +928,7 @@ function Marquee() {
 
 function SectionHead({ num, tag, title }) {
   return (
-    <div className="section-head reveal" style={{ padding: "0px 0px 48px" }}>
+    <div className="section-head reveal">
       <div className="kicker">
         <div className="num">{num}</div>
         <div className="tag">{tag}</div>
@@ -942,8 +942,8 @@ function About() {
   return (
     <section id="about" className="wrap">
       <SectionHead num="— 01" tag="About" title={<>Eight years between the <em style={{ color: 'var(--accent)', fontStyle: 'normal' }}>strategy</em> deck and the <em style={{ color: 'var(--accent)', fontStyle: 'normal' }}>final</em> artwork.</>} />
-      <div className="about" style={{ padding: "0px", height: "548px" }}>
-        <div className="bio reveal" style={{ padding: "0px 0px 40.2695px" }}>
+      <div className="about">
+        <div className="bio reveal">
           {PROFILE.bio.map((p, i) => <p key={i} data-editable={`profile-bio-${i}`} suppressContentEditableWarning>{p}</p>)}
         </div>
         <div className="facts reveal">
@@ -1153,7 +1153,7 @@ function Contact() {
     <section id="contact" className="wrap">
       <div className="contact-wrap">
         <div className="left reveal">
-          <h2 style={{ padding: "42.7031px 0px 0px" }}>Let's <em>make</em><br />something<br />worth <em>noticing.</em></h2>
+          <h2>Let's <em>make</em><br />something<br />worth <em>noticing.</em></h2>
           <div className="links">
             <a href={`mailto:${PROFILE.email}`} data-hover>
               <span data-editable="profile-email" suppressContentEditableWarning>{PROFILE.email}</span><span className="arr">→</span>
