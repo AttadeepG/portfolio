@@ -2310,11 +2310,6 @@ function EditorPanel({ editMode, setEditMode }) {
                       '<script id="portfolio-data-overrides">window.__PORTFOLIO_OVERRIDES={};</script>',
                       `<script id="portfolio-data-overrides">window.__PORTFOLIO_OVERRIDES=${JSON.stringify(ov)};</script>`
                     );
-                    html = html
-                      .replace('src="https://unpkg.com/react@18/umd/react.production.min.js"', 'src="https://unpkg.com/react@18/umd/react.production.min.js"')
-                      .replace(/src="react\.min\.js"/, 'src="https://unpkg.com/react@18/umd/react.production.min.js"')
-                      .replace(/src="react-dom\.min\.js"/, 'src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"')
-                      .replace(/src="babel\.min\.js"/, 'src="https://unpkg.com/@babel/standalone/babel.min.js"');
                     const [user, repo] = ghRepo.split('/');
                     const api = `https://api.github.com/repos/${user}/${repo}/contents/${ghFile}`;
                     const hdrs = { Authorization: `token ${ghToken}`, 'Content-Type': 'application/json' };
