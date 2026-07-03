@@ -2306,9 +2306,10 @@ function EditorPanel({ editMode, setEditMode }) {
                   try {
                     const ov = JSON.parse(localStorage.getItem('portfolio-autosave') || '{}');
                     let html = '<!doctype html>\n' + document.documentElement.outerHTML;
+                    const _cs = '<' + '/script>';
                     html = html.replace(
-                      '<script id="portfolio-data-overrides">window.__PORTFOLIO_OVERRIDES={};</script>',
-                      `<script id="portfolio-data-overrides">window.__PORTFOLIO_OVERRIDES=${JSON.stringify(ov)};</script>`
+                      '<script id="portfolio-data-overrides">window.__PORTFOLIO_OVERRIDES={};<' + '/script>',
+                      '<script id="portfolio-data-overrides">window.__PORTFOLIO_OVERRIDES=' + JSON.stringify(ov) + ';<' + '/script>'
                     );
                     const [user, repo] = ghRepo.split('/');
                     const api = `https://api.github.com/repos/${user}/${repo}/contents/${ghFile}`;
@@ -2339,8 +2340,8 @@ function EditorPanel({ editMode, setEditMode }) {
                   const ov = JSON.parse(localStorage.getItem('portfolio-autosave') || '{}');
                   let html = '<!doctype html>\n' + document.documentElement.outerHTML;
                   html = html.replace(
-                    '<script id="portfolio-data-overrides">window.__PORTFOLIO_OVERRIDES={};</script>',
-                    `<script id="portfolio-data-overrides">window.__PORTFOLIO_OVERRIDES=${JSON.stringify(ov)};</script>`
+                    '<script id="portfolio-data-overrides">window.__PORTFOLIO_OVERRIDES={};<' + '/script>',
+                    '<script id="portfolio-data-overrides">window.__PORTFOLIO_OVERRIDES=' + JSON.stringify(ov) + ';<' + '/script>'
                   );
                   const blob = new Blob([html], { type: 'text/html' });
                   const url = URL.createObjectURL(blob);
