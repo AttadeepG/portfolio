@@ -2306,7 +2306,6 @@ function EditorPanel({ editMode, setEditMode }) {
                   try {
                     const ov = JSON.parse(localStorage.getItem('portfolio-autosave') || '{}');
                     let html = '<!doctype html>\n' + document.documentElement.outerHTML;
-                    const _cs = '<' + '/script>';
                     html = html.replace(
                       '<script id="portfolio-data-overrides">window.__PORTFOLIO_OVERRIDES={};<' + '/script>',
                       '<script id="portfolio-data-overrides">window.__PORTFOLIO_OVERRIDES=' + JSON.stringify(ov) + ';<' + '/script>'
